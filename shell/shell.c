@@ -3,7 +3,7 @@
  * This file contains the main for the shell program
  *
  * @author Erik Corral
- * @version 1.0
+ * @version 1.0.1
  */
 
 #include <stdio.h>
@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include "mytoc.h"
 #include <string.h>
 
@@ -20,15 +21,16 @@
 
 
 
-int  main()
+int  main(int argc, char**argv, char**envp)
 {
   int pid;
   int pathGiven;
   int status;
   char * command;
- 
+  char * fullPath;
+  char ** tokenPath;
   char ** tokenVec;
-  do{
+  while(1){
      
     char buffer[128];
     printf ("$ ");
@@ -37,34 +39,62 @@ int  main()
 	
 
     tokenVec = mytoc(buffer, ' ');
-	
+
+    /* If tokenVec[0] == "Exit" Terminate the shell.
+     */
+    
+    if(checkExit(tokenVec))
+      {
+	break;
+      }
+
+    /* If tokenVec[0][0] starts with a '/' a path is more than likely
+     * being specified
+     */
 
     if(tokenVec[0][0] == '/')
       {
 	pathGiven = 1;
 	command = tokenVec[0];
       }
+
+    /* If tokenVec[0][0] == blank this means the user has not entered
+     * any input
+     */
+    
+    else if (tokenVec[0][0] == '\0')
+      {
+	
+	pathGiven = 2;
+      }
+
+    /* pathGiven = 0 if there is not a path specified
+     */
+    
     else
       {
 	pathGiven = 0;
       }
 
+
+
     if(pathGiven == 0)
       {
 	char * path = getenv("PATH");
-	char ** tokenPath = mytoc(path, ':');
+	tokenPath = mytoc(path, ':');
 	char * cmd = tokenVec[0];
 
 	 
 	 
-	for(int i = 0; i  < 9  ; i++)
+	for(int i = 0; tokenPath[i] != '\0'    ; i++)
 	  {
-
-	    char * fullPath = merge(tokenPath[i], cmd);
+	   
+	    fullPath = merge(tokenPath[i], cmd);
 	    if(checkCommand(fullPath) == 1)
 	      {
 		command = cmd;
 		status = 1;
+		break;
 	      }
 	    else
 	      {
@@ -73,6 +103,8 @@ int  main()
 	  }
       }
 
+
+    else if (pathGiven == 1){
     if(checkCommand(command) == 1)
       {
 	
@@ -82,38 +114,58 @@ int  main()
       {
 	status = 0;
       }
+    }
 
+    else
+      {
+	status = 2;
+      }
     	 
 
     if (status == 1)
       {
 	pid = saferFork();
+	
 	if(pid == 0)
 	  {
-        
+	    execve(fullPath, &command, envp);
 	  }
+	else if (pid == -1)
+	  {
+	    printf("Failed to fork");
+	    exit(1);
+	  }
+	else
+	  {
+	    int waitStatus;
+	    waitpid(pid, &waitStatus, 0);
+	  }
+		 
+		
 	     
       }
 
-    else
+    else if (status == 0)
       {
 	printf("Command not found!\n");
       }
-	 
-	 
-	 
-	  
-	
+
+
+    /*
+    
     for(int i = 0 ; tokenVec[i] != '\0' ; i++)
       {
+
 	printf("%d: %s\n", i, tokenVec[i]);
       }
+
+    */
        
   }
 
 
   
-  while(checkExit(tokenVec) != 1);
+  freeMem(tokenPath);
   freeMem(tokenVec);
 
 

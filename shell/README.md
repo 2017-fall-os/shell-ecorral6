@@ -25,12 +25,18 @@ To delete binaries:
 $ make clean
 ~~~
 
+current-version-changes:
+
+1. execve now works, and shell can run programs found in the PATH location.
+
+2. Fixed a bug with the tokenizer returning a \n when a user entered a command.
+
+
 
 Current issues:
 
-1. execve is still a wip
-2. when using stat call to check if path contains a program, the array of chars seems to have extra characters at the end causing stat to always return a -1
-3. wait implemention is also a wip
-4. reading pipes still wip
+1. simple  pipes still wip
+2. background tasks still wip
+3. cd command still wip
 
 

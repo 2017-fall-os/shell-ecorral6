@@ -74,6 +74,8 @@ void getTokenLength(int * tokenLengths, char * str, char delim, int numTokens)
       k = 0;
 
     }
+
+    tokenLengths[numTokens] = 0;
    
 
 }
@@ -92,30 +94,30 @@ void setTokens(char ** tokenVec, char * str, char delim, int numTokens, int * to
 {
   int i, j= 0, k = 0;
   
-  for (i = 0 ; i < numTokens ; i++)
+  for (i = 0 ; i <= numTokens ; i++)
     {
-      tokenVec[i] = (char *)malloc(tokenLength[i]+1);
       
-       while(str[j] != delim &&  str[j] != '\0')
+      tokenVec[i] = (char *)malloc(tokenLength[i] + 1);
+      
+       while(str[j] != delim &&  str[j] != '\0' && i < numTokens)
       	{
-	  
+
+	  if(str[j] != '\n'){
 	  tokenVec[i][k] = str[j];
-	 
-	  
+	  }
 	          k++;
 	  	  j++;
 	  	 
-	 	}
+	}
+       if(i < numTokens)
+	 {
        tokenVec[i][j] = '\0';
        j++;
        k = 0;
-   
-     
-       
-
+	 }
        
     }
-  
+  tokenVec[numTokens] = (char*)0;
   
 }
 
@@ -132,7 +134,7 @@ char ** mytoc(char *str, char delim)
   int numTokens = countTokens(str, delim);
   int tokenLengths[numTokens];
   getTokenLength(tokenLengths,str, delim, numTokens);
- char **tokenVec = (char **)calloc(numTokens, sizeof(char *));
+ char **tokenVec = (char **)calloc(numTokens+1, sizeof(char *));
  setTokens(tokenVec, str, delim, numTokens, tokenLengths);
 
   return tokenVec;
@@ -148,7 +150,7 @@ char ** mytoc(char *str, char delim)
   int checkExit(char ** tokenVec)
     {
       char * exit = "exit";
-      int counter;
+      int counter = 0;
       int i;
       for(i = 0; i < 4 ; i++)
 	{
@@ -189,9 +191,9 @@ void freeMem(char ** tokenVec)
 
 pid_t saferFork()
 {
-  fprintf(stderr, "process <%d> calling fork() in 5 seconds...", getpid());
+  /*fprintf(stderr, "process <%d> calling fork() in 5 seconds...", getpid()); */
   sleep(5);
-  fprintf(stderr, "calling fork now!\n");
+  /*fprintf(stderr, "calling fork now!\n"); */
   return fork();
 }
 
@@ -249,7 +251,6 @@ int checkCommand(char * path)
   int status;
 
   status = stat(path, &buffer2);
-  printf("status code %d \n", status);
   if(status == 0)
     return 1;
   else
