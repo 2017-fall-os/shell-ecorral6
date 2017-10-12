@@ -18,3 +18,5 @@ void freeMem(char ** tokenVec);
 pid_t saferFork();
 char * merge(char * path, char *cmd);
 int checkCommand(char * path);
+void chDir( char * path);
+int checkCd(char ** tokenVec);

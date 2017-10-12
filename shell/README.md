@@ -27,9 +27,7 @@ $ make clean
 
 current-version-changes:
 
-1. execve now works, and shell can run programs found in the PATH location.
-
-2. Fixed a bug with the tokenizer returning a \n when a user entered a command.
+1. Added chDir system call
 
 
 
@@ -37,6 +35,5 @@ Current issues:
 
 1. simple  pipes still wip
 2. background tasks still wip
-3. cd command still wip
 
 

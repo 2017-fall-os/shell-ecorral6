@@ -257,3 +257,53 @@ int checkCommand(char * path)
     return 0;
 
 }
+
+
+/**
+ * Summary of chDir
+ * Changes the working directory to the path specified only if valid
+ * @param char * path
+ * */
+
+void chDir( char *path)
+{
+  int status =  chdir(path);
+  if(status == 0)
+    {
+      printf("[%s]",path);
+      fflush(stdout);
+    }
+  else
+    {
+      printf("Path not found");
+    }
+  
+}
+
+/**
+ * Summary of checkCd
+ * Checks to see if the command given is "cd"
+ * @param char ** tokenVec
+ * @return int;
+ * */
+
+  int checkCd(char ** tokenVec)
+    {
+      char * cd = "cd";
+      int counter = 0;
+      int i;
+      for(i = 0; i < 2 ; i++)
+	{
+	
+	  if(tokenVec[0][i] == cd[i])
+	    {
+	      counter++;
+	      if(counter == 2)
+		{
+		  return 1;
+		}
+	    }
+	
+	}
+        return 0;
+    }

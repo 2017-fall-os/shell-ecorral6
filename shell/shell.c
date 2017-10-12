@@ -48,6 +48,12 @@ int  main(int argc, char**argv, char**envp)
 	break;
       }
 
+    if(checkCd(tokenVec))
+      {
+	chDir(tokenVec[1]);
+	pathGiven = 2;
+	
+      }
     /* If tokenVec[0][0] starts with a '/' a path is more than likely
      * being specified
      */
@@ -80,6 +86,7 @@ int  main(int argc, char**argv, char**envp)
 
     if(pathGiven == 0)
       {
+	
 	char * path = getenv("PATH");
 	tokenPath = mytoc(path, ':');
 	char * cmd = tokenVec[0];
